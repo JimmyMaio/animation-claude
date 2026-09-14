@@ -27,7 +27,8 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "prep:highlight": "node scripts/extract-highlight-coords.mjs"
   },
   "sideEffects": [
     "*.css"
