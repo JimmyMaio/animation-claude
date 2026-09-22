@@ -49,6 +49,11 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+        // Change "seed" (e.g. via --props at render time, or in the Studio
+        // props panel) to get a different, still-deterministic rotation.
+        defaultProps={{
+          seed: 1,
+        }}
       />
     </>
   );

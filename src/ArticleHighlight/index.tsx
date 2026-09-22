@@ -4,6 +4,7 @@ import {
   Easing,
   Img,
   interpolate,
+  random,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
@@ -17,13 +18,31 @@ const CARD_MARGIN_Y = 130;
 const HIGHLIGHT_COLOR = "#ffd400";
 const BLUR_DURATION_SECONDS = 1;
 const HIGHLIGHT_SWEEP_SECONDS = 1;
-const MAX_ROTATE_Y_DEG = 15;
-const MAX_ROTATE_X_DEG = 15;
 const MAX_ZOOM = 1.08;
 
-export const ArticleHighlight: React.FC = () => {
+// Peak rotation is randomized per `seed` within these ranges (degrees).
+const ROTATE_Y_DEG_RANGE: [number, number] = [10, 22];
+const ROTATE_X_DEG_RANGE: [number, number] = [6, 16];
+
+export type ArticleHighlightProps = {
+  // Change this (e.g. per render) to get a different rotation each time.
+  // Remotion's random() is deterministic per seed, so every frame of a
+  // single render still agrees on the same values.
+  readonly seed: number | string;
+};
+
+export const ArticleHighlight: React.FC<ArticleHighlightProps> = ({ seed }) => {
   const frame = useCurrentFrame();
   const { fps, width, height, durationInFrames } = useVideoConfig();
+
+  // Randomize the 3D turn: how far it rotates on each axis, and whether it
+  // swings left-to-right or right-to-left (independently per axis).
+  const [rotateYMin, rotateYMax] = ROTATE_Y_DEG_RANGE;
+  const rotateYAmplitude = rotateYMin + random(`${seed}-rotateY-amplitude`) * (rotateYMax - rotateYMin);
+  const rotateYSign = random(`${seed}-rotateY-sign`) < 0.5 ? -1 : 1;
+  const [rotateXMin, rotateXMax] = ROTATE_X_DEG_RANGE;
+  const rotateXAmplitude = rotateXMin + random(`${seed}-rotateX-amplitude`) * (rotateXMax - rotateXMin);
+  const rotateXSign = random(`${seed}-rotateX-sign`) < 0.5 ? -1 : 1;
 
   // Fit the article image inside the canvas with generous padding, without
   // distorting its aspect ratio (derived from the OCR'd source image, so
@@ -52,8 +71,16 @@ export const ArticleHighlight: React.FC = () => {
     easing: Easing.inOut(Easing.ease),
   });
   const zoom = interpolate(motionProgress, [0, 1], [1, MAX_ZOOM]);
-  const rotateY = interpolate(motionProgress, [0, 1], [-MAX_ROTATE_Y_DEG, MAX_ROTATE_Y_DEG]);
-  const rotateX = interpolate(motionProgress, [0, 1], [MAX_ROTATE_X_DEG, -MAX_ROTATE_X_DEG]);
+  const rotateY = interpolate(
+    motionProgress,
+    [0, 1],
+    [-rotateYAmplitude * rotateYSign, rotateYAmplitude * rotateYSign],
+  );
+  const rotateX = interpolate(
+    motionProgress,
+    [0, 1],
+    [rotateXAmplitude * rotateXSign, -rotateXAmplitude * rotateXSign],
+  );
 
   // The highlighter evolves left-to-right right after the blur settles.
   const highlightStartFrame = fps * BLUR_DURATION_SECONDS;
