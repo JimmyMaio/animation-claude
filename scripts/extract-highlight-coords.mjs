@@ -1,18 +1,27 @@
-// Runs the tesseract CLI over public/article.png, locates the words making up
-// TARGET_PHRASE, and writes their merged bounding box (plus the image's
-// pixel dimensions) to src/ArticleHighlight/highlight-data.json so the
-// composition can position the highlighter without doing OCR at render time.
+// Runs the tesseract CLI over a screenshot, locates the words making up a
+// target phrase, and writes one bounding box per *text line* the phrase
+// spans (plus the image's pixel dimensions) to a JSON file consumed by
+// <HighlightImage>. A single merged box would be wrong for a phrase that
+// wraps across lines, since it would also cover whatever text sits between
+// the end of one line and the start of the next.
+//
+// Usage:
+//   node scripts/extract-highlight-coords.mjs <imagePath> <outputJsonPath> "<phrase to highlight>"
 import { execFileSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const imagePath = path.join(__dirname, "../public/article.png");
-const outDir = path.join(__dirname, "../src/ArticleHighlight");
-const outPath = path.join(outDir, "highlight-data.json");
+const [, , imageArg, outputArg, phraseArg] = process.argv;
 
-const TARGET_PHRASE = ["$20", "trillion", "in", "2025"];
+if (!imageArg || !outputArg || !phraseArg) {
+  console.error(
+    'Usage: node scripts/extract-highlight-coords.mjs <imagePath> <outputJsonPath> "<phrase to highlight>"',
+  );
+  process.exit(1);
+}
+
+const imagePath = path.resolve(imageArg);
+const outputPath = path.resolve(outputArg);
 
 const normalize = (word) => word.toLowerCase().replace(/[^a-z0-9$]/g, "");
 
@@ -26,20 +35,18 @@ function runTesseract(image) {
 function parseTsv(tsv) {
   const [headerLine, ...lines] = tsv.trim().split("\n");
   const header = headerLine.split("\t");
-  return lines
-    .filter(Boolean)
-    .map((line) => {
-      const cols = line.split("\t");
-      const row = {};
-      header.forEach((key, i) => {
-        row[key] = cols[i];
-      });
-      return row;
+  return lines.filter(Boolean).map((line) => {
+    const cols = line.split("\t");
+    const row = {};
+    header.forEach((key, i) => {
+      row[key] = cols[i];
     });
+    return row;
+  });
 }
 
-function findPhraseBoundingBox(words, phrase) {
-  const target = phrase.map(normalize);
+function findPhraseWords(words, phrase) {
+  const target = phrase.split(/\s+/).map(normalize).filter(Boolean);
   for (let i = 0; i <= words.length - target.length; i++) {
     const slice = words.slice(i, i + target.length);
     if (slice.every((w, j) => normalize(w.text) === target[j])) {
@@ -47,6 +54,39 @@ function findPhraseBoundingBox(words, phrase) {
     }
   }
   return null;
+}
+
+// Groups words by their OCR text line, in reading order.
+function groupByLine(words) {
+  const groups = new Map();
+  for (const word of words) {
+    const key = `${word.block_num}-${word.par_num}-${word.line_num}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(word);
+  }
+  return [...groups.values()].sort(
+    (a, b) => Math.min(...a.map((w) => w.top)) - Math.min(...b.map((w) => w.top)),
+  );
+}
+
+// A real highlighter marker overshoots the glyphs a little, especially
+// below the baseline (descenders) and above the cap height.
+function boundingBoxWithPadding(lineWords) {
+  const left = Math.min(...lineWords.map((w) => w.left));
+  const top = Math.min(...lineWords.map((w) => w.top));
+  const right = Math.max(...lineWords.map((w) => w.left + w.width));
+  const bottom = Math.max(...lineWords.map((w) => w.top + w.height));
+  const textWidth = right - left;
+  const textHeight = bottom - top;
+  const padX = textWidth * 0.015;
+  const padTop = textHeight * 0.14;
+  const padBottom = textHeight * 0.26;
+  return {
+    left: left - padX,
+    top: top - padTop,
+    width: textWidth + padX * 2,
+    height: textHeight + padTop + padBottom,
+  };
 }
 
 const tsv = runTesseract(imagePath);
@@ -64,52 +104,39 @@ const words = rows
     top: Number(r.top),
     width: Number(r.width),
     height: Number(r.height),
+    block_num: r.block_num,
+    par_num: r.par_num,
+    line_num: r.line_num,
   }));
 
-const match = findPhraseBoundingBox(words, TARGET_PHRASE);
+const match = findPhraseWords(words, phraseArg);
 if (!match) {
-  throw new Error(
-    `Could not locate the phrase "${TARGET_PHRASE.join(" ")}" in the OCR output of ${imagePath}`,
-  );
+  throw new Error(`Could not locate the phrase "${phraseArg}" in the OCR output of ${imagePath}`);
 }
 
-const left = Math.min(...match.map((w) => w.left));
-const top = Math.min(...match.map((w) => w.top));
-const right = Math.max(...match.map((w) => w.left + w.width));
-const bottom = Math.max(...match.map((w) => w.top + w.height));
-
-// A real highlighter marker overshoots the glyphs a little, especially
-// below the baseline (descenders) and above the cap height.
-const textWidth = right - left;
-const textHeight = bottom - top;
-const padX = textWidth * 0.015;
-const padTop = textHeight * 0.14;
-const padBottom = textHeight * 0.26;
-
-const highlight = {
-  left: left - padX,
-  top: top - padTop,
-  width: textWidth + padX * 2,
-  height: textHeight + padTop + padBottom,
-};
+const highlights = groupByLine(match).map((lineWords) => {
+  const box = boundingBoxWithPadding(lineWords);
+  return {
+    ...box,
+    fraction: {
+      left: box.left / imageWidth,
+      top: box.top / imageHeight,
+      width: box.width / imageWidth,
+      height: box.height / imageHeight,
+    },
+  };
+});
 
 const data = {
-  sourceImage: "article.png",
+  sourceImage: path.basename(imagePath),
   imageWidth,
   imageHeight,
-  phrase: TARGET_PHRASE.join(" "),
-  words: match,
-  highlight,
-  highlightFraction: {
-    left: highlight.left / imageWidth,
-    top: highlight.top / imageHeight,
-    width: highlight.width / imageWidth,
-    height: highlight.height / imageHeight,
-  },
+  phrase: phraseArg,
+  highlights,
 };
 
-mkdirSync(outDir, { recursive: true });
-writeFileSync(outPath, `${JSON.stringify(data, null, 2)}\n`);
+mkdirSync(path.dirname(outputPath), { recursive: true });
+writeFileSync(outputPath, `${JSON.stringify(data, null, 2)}\n`);
 
-console.log(`Wrote ${path.relative(process.cwd(), outPath)}`);
+console.log(`Wrote ${path.relative(process.cwd(), outputPath)}`);
 console.log(data);

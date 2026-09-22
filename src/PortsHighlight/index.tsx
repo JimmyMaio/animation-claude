@@ -2,11 +2,11 @@ import React from "react";
 import { HighlightImage } from "../HighlightImage";
 import highlightData from "./highlight-data.json";
 
-export type ArticleHighlightProps = {
+export type PortsHighlightProps = {
   readonly seed: number | string;
 };
 
-export const ArticleHighlight: React.FC<ArticleHighlightProps> = ({ seed }) => {
+export const PortsHighlight: React.FC<PortsHighlightProps> = ({ seed }) => {
   return (
     <HighlightImage
       sourceImage={highlightData.sourceImage}

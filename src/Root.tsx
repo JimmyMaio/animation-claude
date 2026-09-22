@@ -3,6 +3,7 @@ import { Composition } from "remotion";
 import { ArticleHighlight } from "./ArticleHighlight";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
+import { PortsHighlight } from "./PortsHighlight";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -51,6 +52,18 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         // Change "seed" (e.g. via --props at render time, or in the Studio
         // props panel) to get a different, still-deterministic rotation.
+        defaultProps={{
+          seed: 1,
+        }}
+      />
+
+      <Composition
+        id="PortsHighlight"
+        component={PortsHighlight}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
         defaultProps={{
           seed: 1,
         }}

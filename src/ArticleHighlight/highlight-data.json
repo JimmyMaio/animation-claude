@@ -2,47 +2,19 @@
   "sourceImage": "article.png",
   "imageWidth": 2486,
   "imageHeight": 1632,
-  "phrase": "$20 trillion in 2025",
-  "words": [
+  "phrase": "$20 trillion in 2025,",
+  "highlights": [
     {
-      "text": "$20",
-      "left": 1315,
-      "top": 191,
-      "width": 120,
-      "height": 61
-    },
-    {
-      "text": "trillion",
-      "left": 1459,
-      "top": 190,
-      "width": 215,
-      "height": 58
-    },
-    {
-      "text": "in",
-      "left": 1696,
-      "top": 193,
-      "width": 63,
-      "height": 54
-    },
-    {
-      "text": "2025,",
-      "left": 1782,
-      "top": 208,
-      "width": 171,
-      "height": 58
+      "left": 1305.43,
+      "top": 179.36,
+      "width": 657.14,
+      "height": 106.4,
+      "fraction": {
+        "left": 0.5251126307320998,
+        "top": 0.10990196078431373,
+        "width": 0.2643362831858407,
+        "height": 0.06519607843137255
+      }
     }
-  ],
-  "highlight": {
-    "left": 1305.43,
-    "top": 179.36,
-    "width": 657.14,
-    "height": 106.4
-  },
-  "highlightFraction": {
-    "left": 0.5251126307320998,
-    "top": 0.10990196078431373,
-    "width": 0.2643362831858407,
-    "height": 0.06519607843137255
-  }
+  ]
 }
