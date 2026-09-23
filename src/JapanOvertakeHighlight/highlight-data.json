@@ -1,0 +1,32 @@
+{
+  "sourceImage": "japan-overtake-headline.png",
+  "imageWidth": 1393,
+  "imageHeight": 712,
+  "phrase": "China overtakes Japan as world's second-largest economy",
+  "highlights": [
+    {
+      "left": 334.515,
+      "top": 203.24,
+      "width": 513.97,
+      "height": 47.599999999999994,
+      "fraction": {
+        "left": 0.2401399856424982,
+        "top": 0.2854494382022472,
+        "width": 0.3689662598707825,
+        "height": 0.06685393258426965
+      }
+    },
+    {
+      "left": 336.39,
+      "top": 242.24,
+      "width": 385.22,
+      "height": 47.599999999999994,
+      "fraction": {
+        "left": 0.24148600143575016,
+        "top": 0.3402247191011236,
+        "width": 0.2765398420674803,
+        "height": 0.06685393258426965
+      }
+    }
+  ]
+}
