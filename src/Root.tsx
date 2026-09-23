@@ -1,6 +1,7 @@
 import "./index.css";
 import { Composition } from "remotion";
 import { ArticleHighlight } from "./ArticleHighlight";
+import { ChinaGrowthHighlight } from "./ChinaGrowthHighlight";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { PortsHighlight } from "./PortsHighlight";
@@ -60,6 +61,18 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="PortsHighlight"
         component={PortsHighlight}
+        durationInFrames={150}
+        fps={30}
+        width={1920}
+        height={1080}
+        defaultProps={{
+          seed: 1,
+        }}
+      />
+
+      <Composition
+        id="ChinaGrowthHighlight"
+        component={ChinaGrowthHighlight}
         durationInFrames={150}
         fps={30}
         width={1920}
