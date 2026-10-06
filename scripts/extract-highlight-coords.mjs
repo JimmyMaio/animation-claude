@@ -47,8 +47,13 @@ function parseTsv(tsv) {
 
 function findPhraseWords(words, phrase) {
   const target = phrase.split(/\s+/).map(normalize).filter(Boolean);
-  for (let i = 0; i <= words.length - target.length; i++) {
-    const slice = words.slice(i, i + target.length);
+  // Tesseract sometimes tokenizes a standalone punctuation mark (e.g. the
+  // "-" in "2024 - March") as its own word. Drop those from the candidate
+  // list too, so a punctuation-only token doesn't throw off the positional
+  // alignment between the phrase and the OCR'd words.
+  const candidates = words.filter((w) => normalize(w.text).length > 0);
+  for (let i = 0; i <= candidates.length - target.length; i++) {
+    const slice = candidates.slice(i, i + target.length);
     if (slice.every((w, j) => normalize(w.text) === target[j])) {
       return slice;
     }

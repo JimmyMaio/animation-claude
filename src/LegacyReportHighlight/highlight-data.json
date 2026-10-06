@@ -1,0 +1,44 @@
+{
+  "sourceImage": "legacy-systems-report.webp",
+  "imageWidth": 2000,
+  "imageHeight": 1089,
+  "phrase": "The Ministry of Economy, Trade and Industry has compiled a report on issues related to DX and legacy systems and the direction of response measures based on discussions (July 2024 - March 2025) in the Legacy System Modernization Committee* included in the Priority Plan for the Realization of a Digital Society (the Cabinet decision on June 21, 2024).",
+  "highlights": [
+    {
+      "left": 328.965,
+      "top": 410.92,
+      "width": 1307.07,
+      "height": 30.799999999999997,
+      "fraction": {
+        "left": 0.16448249999999998,
+        "top": 0.3773370064279155,
+        "width": 0.653535,
+        "height": 0.02828282828282828
+      }
+    },
+    {
+      "left": 330.445,
+      "top": 442.92,
+      "width": 1274.11,
+      "height": 30.799999999999997,
+      "fraction": {
+        "left": 0.1652225,
+        "top": 0.4067217630853995,
+        "width": 0.6370549999999999,
+        "height": 0.02828282828282828
+      }
+    },
+    {
+      "left": 330.085,
+      "top": 474.92,
+      "width": 1298.83,
+      "height": 30.799999999999997,
+      "fraction": {
+        "left": 0.16504249999999998,
+        "top": 0.4361065197428834,
+        "width": 0.649415,
+        "height": 0.02828282828282828
+      }
+    }
+  ]
+}
