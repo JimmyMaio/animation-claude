@@ -15,15 +15,16 @@ const CARD_MARGIN_X = 150;
 const CARD_MARGIN_Y = 130;
 
 const HIGHLIGHT_COLOR = "#ffd400";
-// These (and the zoom/rotate sweep, which is keyed to the full composition
-// length) are tuned for a 15s composition — scale them if durationInFrames
-// changes, so blur-in and highlight-sweep keep the same proportion of the
-// total runtime instead of just leaving a longer static hold at the end.
-const BLUR_DURATION_SECONDS = 3;
-// Base time to sweep a single-line highlight; each additional wrapped line
-// gets its own share of extra time so a longer phrase doesn't feel rushed.
-const HIGHLIGHT_BASE_SWEEP_SECONDS = 3;
-const HIGHLIGHT_SECONDS_PER_EXTRA_LINE = 1.8;
+// Expressed as fractions of the composition's own duration (like the
+// zoom/rotate sweep below, which already keys off durationInFrames), so
+// every composition keeps the same pacing regardless of its own length —
+// a 15s composition doesn't need separate constants from a 5s one.
+const BLUR_DURATION_FRACTION = 0.2;
+// Base share of the duration to sweep a single-line highlight; each
+// additional wrapped line gets its own extra share so a longer phrase
+// doesn't feel rushed.
+const HIGHLIGHT_BASE_SWEEP_FRACTION = 0.2;
+const HIGHLIGHT_FRACTION_PER_EXTRA_LINE = 0.12;
 const MAX_ZOOM = 1.08;
 
 // Peak rotation is randomized per `seed` within these ranges (degrees).
@@ -59,7 +60,7 @@ export const HighlightImage: React.FC<HighlightImageProps> = ({
   seed,
 }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { width, height, durationInFrames } = useVideoConfig();
 
   // Randomize the 3D turn: how far it rotates on each axis, and whether it
   // swings left-to-right or right-to-left (independently per axis).
@@ -82,8 +83,10 @@ export const HighlightImage: React.FC<HighlightImageProps> = ({
     cardWidth = cardHeight * imageAspectRatio;
   }
 
-  // The whole composition starts blurred and sharpens over the first second.
-  const blurPx = interpolate(frame, [0, fps * BLUR_DURATION_SECONDS], [28, 0], {
+  // The whole composition starts blurred and sharpens over the first
+  // BLUR_DURATION_FRACTION of its duration.
+  const blurEndFrame = durationInFrames * BLUR_DURATION_FRACTION;
+  const blurPx = interpolate(frame, [0, blurEndFrame], [28, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
@@ -110,10 +113,10 @@ export const HighlightImage: React.FC<HighlightImageProps> = ({
   // The highlighter evolves left-to-right, line by line, right after the
   // blur settles. Each line's share of the total sweep is proportional to
   // its width, so the "pen" moves at a roughly constant speed.
-  const highlightStartFrame = fps * BLUR_DURATION_SECONDS;
-  const sweepSeconds =
-    HIGHLIGHT_BASE_SWEEP_SECONDS + (highlights.length - 1) * HIGHLIGHT_SECONDS_PER_EXTRA_LINE;
-  const highlightEndFrame = highlightStartFrame + fps * sweepSeconds;
+  const highlightStartFrame = blurEndFrame;
+  const sweepFraction =
+    HIGHLIGHT_BASE_SWEEP_FRACTION + (highlights.length - 1) * HIGHLIGHT_FRACTION_PER_EXTRA_LINE;
+  const highlightEndFrame = highlightStartFrame + durationInFrames * sweepFraction;
   const overallReveal = interpolate(frame, [highlightStartFrame, highlightEndFrame], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",

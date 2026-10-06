@@ -49,8 +49,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ArticleHighlight"
         component={ArticleHighlight}
-        // 15s — see the timing constants atop src/HighlightImage/index.tsx.
-        durationInFrames={450}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}
@@ -64,7 +63,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="PortsHighlight"
         component={PortsHighlight}
-        durationInFrames={450}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}
@@ -76,7 +75,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ChinaGrowthHighlight"
         component={ChinaGrowthHighlight}
-        durationInFrames={450}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}
@@ -88,7 +87,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="JapanOvertakeHighlight"
         component={JapanOvertakeHighlight}
-        durationInFrames={450}
+        durationInFrames={150}
         fps={30}
         width={1920}
         height={1080}
@@ -100,6 +99,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="LegacyReportHighlight"
         component={LegacyReportHighlight}
+        // 15s (the others are the 5s default) — the 3-line paragraph needs
+        // more room to breathe than a headline-length highlight.
         durationInFrames={450}
         fps={30}
         width={1920}
