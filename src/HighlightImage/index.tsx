@@ -15,11 +15,15 @@ const CARD_MARGIN_X = 150;
 const CARD_MARGIN_Y = 130;
 
 const HIGHLIGHT_COLOR = "#ffd400";
-const BLUR_DURATION_SECONDS = 1;
+// These (and the zoom/rotate sweep, which is keyed to the full composition
+// length) are tuned for a 15s composition — scale them if durationInFrames
+// changes, so blur-in and highlight-sweep keep the same proportion of the
+// total runtime instead of just leaving a longer static hold at the end.
+const BLUR_DURATION_SECONDS = 3;
 // Base time to sweep a single-line highlight; each additional wrapped line
 // gets its own share of extra time so a longer phrase doesn't feel rushed.
-const HIGHLIGHT_BASE_SWEEP_SECONDS = 1;
-const HIGHLIGHT_SECONDS_PER_EXTRA_LINE = 0.6;
+const HIGHLIGHT_BASE_SWEEP_SECONDS = 3;
+const HIGHLIGHT_SECONDS_PER_EXTRA_LINE = 1.8;
 const MAX_ZOOM = 1.08;
 
 // Peak rotation is randomized per `seed` within these ranges (degrees).
