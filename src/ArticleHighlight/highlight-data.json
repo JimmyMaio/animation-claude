@@ -1,0 +1,20 @@
+{
+  "sourceImage": "article.png",
+  "imageWidth": 2486,
+  "imageHeight": 1632,
+  "phrase": "$20 trillion in 2025,",
+  "highlights": [
+    {
+      "left": 1305.43,
+      "top": 179.36,
+      "width": 657.14,
+      "height": 106.4,
+      "fraction": {
+        "left": 0.5251126307320998,
+        "top": 0.10990196078431373,
+        "width": 0.2643362831858407,
+        "height": 0.06519607843137255
+      }
+    }
+  ]
+}

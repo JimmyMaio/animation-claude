@@ -1,0 +1,32 @@
+{
+  "sourceImage": "ports-map.png",
+  "imageWidth": 1012,
+  "imageHeight": 984,
+  "phrase": "Chinese firms now operate or have a financial stake in at least 129 ports outside China (see map),",
+  "highlights": [
+    {
+      "left": 754.26,
+      "top": 658.9,
+      "width": 119.48,
+      "height": 21,
+      "fraction": {
+        "left": 0.7453162055335968,
+        "top": 0.6696138211382113,
+        "width": 0.11806324110671937,
+        "height": 0.021341463414634148
+      }
+    },
+    {
+      "left": 127.62,
+      "top": 681.08,
+      "width": 712.76,
+      "height": 39.2,
+      "fraction": {
+        "left": 0.12610671936758894,
+        "top": 0.6921544715447155,
+        "width": 0.7043083003952569,
+        "height": 0.03983739837398374
+      }
+    }
+  ]
+}

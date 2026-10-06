@@ -1,0 +1,20 @@
+{
+  "sourceImage": "china-growth-headline.png",
+  "imageWidth": 1576,
+  "imageHeight": 957,
+  "phrase": "China's economy grew 10.3% in 2010",
+  "highlights": [
+    {
+      "left": 194.18,
+      "top": 239.84,
+      "width": 811.64,
+      "height": 61.599999999999994,
+      "fraction": {
+        "left": 0.12321065989847717,
+        "top": 0.25061650992685475,
+        "width": 0.515,
+        "height": 0.06436781609195402
+      }
+    }
+  ]
+}
